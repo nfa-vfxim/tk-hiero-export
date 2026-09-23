@@ -55,8 +55,7 @@ class ShotgunTranscodeExporterUI(
         self._taskType = ShotgunTranscodeExporter
 
     def create_version_changed(self, state):
-        # PySide6 passes an int here, which never equals the Qt.Checked enum
-        create_version = state in (QtCore.Qt.Checked, 2)
+        create_version = state == QtCore.Qt.Checked
         self._preset._properties["create_version"] = create_version
 
     def populateUI(self, widget, exportTemplate):
