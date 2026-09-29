@@ -140,6 +140,21 @@ class ShotgunTranscodeExporter(
         self._thumbnail = None
         self._quicktime_path = None
         self._temp_quicktime = None
+        self._keep_camera_metadata()
+
+    def _keep_camera_metadata(self):
+        """NFA: write all source metadata into EXR plates (camera make/model, lens, ...).
+        Nuke's Write keeps only a few standard keys by default, which drops the camera
+        data from the OCF; 3DE Shot Prep reads it to suggest the camera."""
+        try:
+            props = self._preset.properties()
+            if props.get("file_type") == "exr":
+                exr = props.setdefault("exr", {})
+                if exr.get("metadata") != "all metadata":
+                    exr["metadata"] = "all metadata"
+                    self.app.log_debug("EXR plate export: metadata set to 'all metadata'")
+        except Exception:
+            pass
 
     def addWriteNodeToScript(self, script, rootNode, framerate):
         """
