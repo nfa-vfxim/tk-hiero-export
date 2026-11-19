@@ -300,6 +300,25 @@ class ShotgunNukeShotExporter(
                     "data_type": match[2],
                 }
 
+                # Saved export presets remember the data type that was
+                # configured when they were saved. The pipeline configuration
+                # is leading, so use its data type for the same write node.
+                for configured in self.app.get_setting(
+                    "nuke_script_toolkit_write_nodes"
+                ):
+                    if (
+                        configured.get("category") == dictionary["category"]
+                        and configured.get("output") == dictionary["output"]
+                    ):
+                        if configured.get("data_type") != dictionary["data_type"]:
+                            self.app.log_debug(
+                                "Using configured data type %s instead of %s "
+                                "from the export preset."
+                                % (configured.get("data_type"), dictionary["data_type"])
+                            )
+                        dictionary["data_type"] = configured.get("data_type")
+                        break
+
                 shotGridWriteNode = nuke.MetadataNode(
                     metadatavalues=list(dictionary.items())
                 )
